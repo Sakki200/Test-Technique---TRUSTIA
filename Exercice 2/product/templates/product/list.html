@@ -498,13 +498,36 @@
         </form>
       </div>
     </div>
+
     {% endfor %} {% if not products %}
-    <div class="empty-state">
+    <div class="empty-state8">
       <div class="empty-icon">📦</div>
       <div class="empty-title">Aucun produit pour l'instant</div>
       <p class="empty-sub">Ajoutez votre premier produit pour commencer</p>
     </div>
     {% endif %}
+    <div class="flex justify-center mt-6 gap-2">
+      <div class="mb-8">
+        {% if page_obj.has_previous %}
+        <a
+          href="?page={{ page_obj.previous_page_number }}"
+          class="btn btn-ghost"
+        >
+          ← Précédent
+        </a>
+        {% endif %}
+
+        <span class="px-4 py-2">
+          Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-ghost">
+          Suivant →
+        </a>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </div>
 

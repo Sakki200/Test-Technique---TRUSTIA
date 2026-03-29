@@ -2,16 +2,31 @@ from datetime import date
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product
 from .forms import ProductForm
+from django.core.paginator import Paginator
 
 
 def list_products(request):
     products = Product.objects.all()
+    paginator = Paginator(products, 5)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     today = date.today()
     expiring_products = [
         p for p in products if p.expiry_date and p.expiry_date <= today
     ]
     total_value = sum(p.price for p in products if p.price)
-    return render(request, "product/list.html", {"products": products, "expiring_products": expiring_products, "total_value": total_value})
+    return render(
+        request,
+        "product/list.html",
+        {
+            "products": page_obj,
+            "page_obj": page_obj,
+            "expiring_products": expiring_products,
+            "total_value": total_value,
+        },
+    )
 
 
 def add_product(request):
