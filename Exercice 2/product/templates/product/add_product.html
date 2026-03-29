@@ -1,0 +1,158 @@
+{% extends "product/base.html" %} {% block content %}
+
+<style>
+  :root {
+    --ink: #1c120a;
+    --parchment: #fdf6ec;
+    --parchment-2: #f9eed8;
+    --sand: #e8d5b0;
+    --amber: #d97706;
+    --amber-mid: #f59e0b;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .anim-1 {
+    animation: slideUp 0.5s ease both;
+  }
+  .anim-2 {
+    animation: slideUp 0.5s 0.08s ease both;
+  }
+  .anim-3 {
+    animation: slideUp 0.5s 0.16s ease both;
+  }
+
+  .title-underline {
+    position: relative;
+    display: inline-block;
+  }
+
+  .title-underline::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+    border-radius: 4px;
+    z-index: -1;
+    opacity: 0.35;
+  }
+
+  /* INPUT */
+  .field-input {
+    width: 100%;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    background: white;
+    border: 1.5px solid var(--sand);
+    border-radius: 12px;
+    padding: 14px 18px;
+    outline: none;
+    transition: 0.15s;
+  }
+
+  .field-input:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px #f59e0b22;
+  }
+
+  form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* BUTTONS */
+  .btn-submit {
+    padding: 15px 32px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-cancel {
+    padding: 15px 26px;
+    border-radius: 12px;
+    background: var(--parchment-2);
+    border: 1.5px solid var(--sand);
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  /* CARD */
+  .preview-card {
+    padding: 24px;
+    background: white;
+    border-radius: 16px;
+    border: 1.5px solid var(--sand);
+  }
+</style>
+
+<div class="container">
+  <div class="">
+    <div class="w-full max-w-6xl">
+      <div class="header-band animate-1">
+        <div>
+          <div class="eyebrow">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+              <circle cx="5" cy="5" r="5" />
+            </svg>
+            Ajout
+          </div>
+          <h1 class="page-title">
+            Ajouter un <span class="title-underline">produit</span>
+          </h1>
+          <p class="subtitle">Renseignez les informations du produit</p>
+        </div>
+      </div>
+
+      <div class="table-card p-2">
+        <form method="POST" class="gap-8" >
+          {% csrf_token %}
+          <div class="flex ">
+            <div>
+              <label class="text-[#b08040] font-bold">Nom du produit</label>
+              {{ form.name }}
+            </div>
+
+            <div>
+              <label class="text-[#b08040] font-bold">Prix (€)</label>
+              {{ form.price }}
+            </div>
+            <div>
+              <label class="text-[#b08040] font-bold">Date de péremption</label>
+              {{ form.expiry_date }}
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 pt-8">
+            <button type="submit" class="btn-submit text-xl hover:brightness-105">Ajouter</button>
+            <a
+              href="{% url 'products_list' %}"
+              class="btn-cancel flex-1 flex items-center justify-center text-xl hover:brightness-95"
+            >
+              Annuler
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
