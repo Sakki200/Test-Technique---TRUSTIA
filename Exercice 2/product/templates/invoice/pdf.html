@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 30px;
+      }
+
+      h1 {
+        font-weight: 700;
+        font-size: larger;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+
+      th {
+        background: #f5f5f5;
+      }
+
+      .total {
+        text-align: right;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Date : {{ date|date:"d/m/Y" }}</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Quantité</th>
+          <th>Prix</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr>
+          <td>{{ product.name }}</td>
+          <td>{{ product.quantity }}</td>
+          <td>{{ product.price|floatformat:2 }} €</td>
+          <td>{{ product.total|floatformat:2 }} €</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="total">Total HTC : {{ htc|floatformat:2 }} €</p>
+    <p class="total">TVA (20%) : {{ tax|floatformat:2 }} €</p>
+    <p class="total">Total TTC : {{ total|floatformat:2 }} €</p>
+  </body>
+</html>

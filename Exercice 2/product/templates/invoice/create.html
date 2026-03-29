@@ -1,0 +1,202 @@
+{% extends "product/base.html" %} {% block content %}
+
+<style>
+  .invoice-container {
+    display: flex;
+    margin: auto;
+    gap: 24px;
+    flex-wrap: wrap;
+    max-width: 60%;
+  }
+
+  .invoice-left {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .invoice-right {
+    flex: 0.4;
+    min-width: 260px;
+  }
+
+  .quantity-input,
+  .product-select {
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid var(--sand);
+  }
+
+  .quantity-input {
+    width: 60px;
+    text-align: center;
+  }
+
+  .product-select {
+    width: 100%;
+  }
+
+  .total-box {
+    background: white;
+    border: 1px solid var(--sand);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 6px #d9770615;
+  }
+
+  .total-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .total-final {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+</style>
+
+<div class="">
+  <!-- HEADER -->
+  <div class="container header-band animate-1">
+    <div>
+      <div class="eyebrow">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+          <circle cx="5" cy="5" r="5" /></svg
+        >Facturation
+      </div>
+      <h1 class="page-title">Créer une <span>facture</span></h1>
+      <p class="subtitle">Ajoutez vos produits</p>
+    </div>
+    <div class="btn-group">
+      <a href="{% url 'products_list' %}">
+        <button type="button" class="btn btn-ghost">← Retour</button>
+      </a>
+    </div>
+  </div>
+
+  <form method="POST" action="{% url 'generate_invoice_pdf' %}">
+    {% csrf_token %}
+    <div class="invoice-container">
+      <!-- LEFT -->
+      <div class="invoice-left table-card animate-2">
+        <div class="table-header">
+          <div>Produit</div>
+          <div class="col-price">Prix</div>
+          <div class="col-price">Qté</div>
+          <div class="col-price">Total</div>
+        </div>
+        <div id="invoice-lines">
+          <div class="product-row invoice-line">
+            <div class="product-name-cell">
+              <div class="product-icon">📦</div>
+              <select
+                name="product[]"
+                class="product-select"
+                onchange="updateTotal()"
+              >
+                <option value="">-- Choisir un produit --</option>
+                {% for product in products %}
+                <option
+                  value="{{ product.id }}"
+                  data-price="{{ product.price }}"
+                >
+                  {{ product.name }} ({{ product.price }} €)
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="price-cell">
+              <div class="price-tag line-price">0 €</div>
+            </div>
+            <div class="price-cell">
+              <input
+                type="number"
+                name="quantity[]"
+                min="1"
+                value="1"
+                class="quantity-input"
+                oninput="updateTotal()"
+              />
+            </div>
+            <div class="price-cell">
+              <div class="price-tag line-total">0 €</div>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end mt-4 mb-2 mr-2">
+          <button type="button" class="btn btn-gold" onclick="addLine()">
+            ➕ Ajouter un produit
+          </button>
+        </div>
+      </div>
+      <!-- RIGHT -->
+      <div class="invoice-right animate-3">
+        <div class="total-box">
+          <div class="stat-label font-semibold text-[#b08040] mb-4">Résumé</div>
+          <div class="total-line">
+            <span>Sous-total</span>
+            <span id="subtotal">0 €</span>
+          </div>
+          <div class="total-line">
+            <span>TVA (20%)</span>
+            <span id="tax">0 €</span>
+          </div>
+          <div class="total-line total-final">
+            <span>Total</span>
+            <span id="total">0 €</span>
+          </div>
+          <div class="btn-group flex justify-center font-bold mt-4">
+            <button class="btn btn-gold text-2xl">💾 Générer la facture</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  function addLine() {
+    const container = document.getElementById("invoice-lines");
+    const firstLine = container.querySelector(".invoice-line");
+
+    const newLine = firstLine.cloneNode(true);
+
+    newLine.querySelector("select").value = "";
+    newLine.querySelector(".line-price").innerText = "0 €";
+    newLine.querySelector(".line-total").innerText = "0 €";
+    newLine.querySelector("input").value = 1;
+
+    container.appendChild(newLine);
+  }
+
+  function updateTotal() {
+    let subtotal = 0;
+
+    document.querySelectorAll(".invoice-line").forEach((line) => {
+      const select = line.querySelector(".product-select");
+      const quantityInput = line.querySelector(".quantity-input");
+
+      const selectedOption = select.options[select.selectedIndex];
+      const price = parseFloat(selectedOption.dataset.price || 0);
+      const qty = parseInt(quantityInput.value) || 0;
+
+      const lineTotal = price * qty;
+
+      line.querySelector(".line-price").innerText = price.toFixed(2) + " €";
+      line.querySelector(".line-total").innerText = lineTotal.toFixed(2) + " €";
+
+      subtotal += lineTotal;
+    });
+
+    const tax = subtotal * 0.2;
+    const total = subtotal + tax;
+
+    document.getElementById("subtotal").innerText = subtotal.toFixed(2) + " €";
+    document.getElementById("tax").innerText = tax.toFixed(2) + " €";
+    document.getElementById("total").innerText = total.toFixed(2) + " €";
+  }
+</script>
+
+{% endblock %}

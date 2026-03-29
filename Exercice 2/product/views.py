@@ -1,8 +1,11 @@
 from datetime import date
+from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product
 from .forms import ProductForm
 from django.core.paginator import Paginator
+from django.template.loader import render_to_string
+from django.http import HttpResponse
 
 
 def list_products(request):
@@ -53,4 +56,73 @@ def delete_product(request, product_id):
         return redirect("products_list")
 
     products = Product.objects.all()
-    return render(request, "product/list.html", {"products": products})
+    return redirect("products_list")
+
+
+def create_invoice(request):
+    if request.method == "POST":
+        items = []
+
+        for key, value in request.POST.items():
+            if key.startswith("quantity_"):
+                product_id = key.split("_")[1]
+                quantity = int(value)
+
+                if quantity > 0:
+                    items.append({"product_id": product_id, "quantity": quantity})
+
+    products = Product.objects.all()
+    return render(request, "invoice/create.html", {"products": products})
+
+
+def generate_invoice_pdf(request):
+    if request.method == "POST":
+        from xhtml2pdf import pisa
+
+        products_ids = request.POST.getlist("product[]")
+        quantities = request.POST.getlist("quantity[]")
+        today = date.today()
+
+        products = []
+        subtotal = Decimal("0.00")
+
+        for product_id, quantity in zip(products_ids, quantities):
+            if product_id and int(quantity) > 0:
+                product = Product.objects.get(id=product_id)
+                qty = int(quantity)
+
+                total = product.price * qty
+                subtotal += total
+
+                products.append(
+                    {
+                        "name": product.name,
+                        "price": product.price,
+                        "quantity": qty,
+                        "total": total,
+                    }
+                )
+
+        tax = subtotal * Decimal("0.20")
+        total = subtotal + tax
+
+        html = render_to_string(
+            "invoice/pdf.html",
+            {
+                "products": products,
+                "subtotal": subtotal,
+                "tax": tax,
+                "total": total,
+                "date": today,
+                "htc": subtotal,
+            },
+        )
+
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = 'attachment; filename="facture.pdf"'
+
+        pisa.CreatePDF(html, dest=response)
+
+        return response
+
+    return redirect("products_list")
