@@ -1,0 +1,139 @@
+{% load static tailwind_tags %}
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@500;600;700&family=Cabinet+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Gestion des Produits</title>
+    {% tailwind_css %}
+  </head>
+  <body>
+    <style>
+      :root {
+        --amber: #d97706;
+        --amber-light: #fef3c7;
+        --amber-mid: #f59e0b;
+        --dark: #1a1209;
+        --dark-2: #2c1f0e;
+        --dark-3: #3d2c14;
+        --ink: #1c120a;
+        --parchment: #fdf6ec;
+        --parchment-2: #f9eed8;
+        --sand: #e8d5b0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Cabinet Grotesk", sans-serif;
+        background-color: var(--parchment);
+      }
+
+      .font-display {
+        font-family: "Clash Display", sans-serif;
+      }
+
+      /* --- Layout --- */
+      .page-wrapper {
+        min-height: 100vh;
+        background: var(--parchment);
+        background-image:
+          radial-gradient(
+            ellipse 80% 50% at 10% 0%,
+            #fde68a55 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 60% 40% at 90% 100%,
+            #d9770622 0%,
+            transparent 55%
+          ),
+          url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d97706' fill-opacity='0.04'%3E%3Cpath d='M0 20h40M20 0v40' stroke='%23d97706' stroke-width='0.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        padding: 3rem 1.5rem;
+      }
+
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      .header-band {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+        flex-wrap: wrap;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--amber);
+        background: #fef3c755;
+        border: 1px solid #f59e0b44;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 10px;
+      }
+
+      .page-title {
+        font-family: "Clash Display", sans-serif;
+        font-size: clamp(2.4rem, 6vw, 4rem);
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1;
+        letter-spacing: -0.03em;
+        position: relative;
+      }
+
+      .page-title span {
+        position: relative;
+        display: inline-block;
+      }
+
+      .page-title span::after {
+        content: "";
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(90deg, #f59e0b, #d97706);
+        border-radius: 4px;
+        z-index: -1;
+        opacity: 0.35;
+      }
+
+      .subtitle {
+        color: #92794a;
+        font-size: 0.9rem;
+        margin-top: 0.4rem;
+        font-weight: 400;
+      }
+
+      .table-card {
+        background: white;
+        border-radius: 20px;
+        border: 1.5px solid var(--sand);
+        overflow: hidden;
+        box-shadow:
+          0 4px 0 #e8c97a,
+          0 8px 32px #d9770618;
+      }
+    </style>
+    <main class="page-wrapper">{% block content %} {% endblock %}</main>
+  </body>
+</html>
